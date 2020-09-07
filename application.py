@@ -73,10 +73,10 @@ color_label = QLabel(root)
 color_label.setText('Color Palette')
 color_label.move(xoff,0)
 color_option = QComboBox(root)
-color_option.addItem('viridis')
+color_option.addItem('inferno')
 color_option.addItem('magma')
 color_option.addItem('plasma')
-color_option.addItem('inferno')
+color_option.addItem('viridis')
 color_option.addItem('cividis')
 color_option.move(xoff,yoff)
 xoff = xoff + color_option.width()
@@ -100,8 +100,8 @@ root.setWindowTitle('Fractal Renderer')
 root.show()
 
 def parse_complex(s):
-    print(s.replace(' ','').replace('i','j'))
     return complex(s.replace(' ','').replace('i','j'))
+
 def render():
     start = time.time()
     center = parse_complex(center_box.text())
@@ -125,7 +125,7 @@ def render():
         return 100*abs(iterations - v) % 255
 
     def continuous_color(v):
-        return v
+        return abs(iterations - v)
 
     if orbit_trap_button.isChecked():
         pixels = orbit_color(pixels)
@@ -144,11 +144,11 @@ def render():
         pic = f'./tmp/{time.time()}.png'
         plt.imsave(pic,pixels,cmap=color_option.currentText())
 
-    image.resize(root.width(),root.height())
+    image.resize(root.width()-40,root.height()-80)
     image.setPixmap(QPixmap(pic))
     image.setScaledContents(False)
     end = time.time()
-    time_label.setText(f'Render: {end - start}s')
+    time_label.setText('Render: %.3fs' % (end-start))
 
 button.clicked.connect(render)
 sys.exit(app.exec_())
