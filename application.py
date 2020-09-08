@@ -125,7 +125,7 @@ def render():
         return 100*abs(iterations - v) % 255
 
     def continuous_color(v):
-        return abs(iterations - v)
+        return v
 
     if orbit_trap_button.isChecked():
         pixels = orbit_color(pixels)
@@ -139,10 +139,10 @@ def render():
 
     if save_button.isChecked():
         pic = f'./export/{time.time()}.png'
-        plt.imsave(pic,pixels,cmap=color_option.currentText())
+        plt.imsave(pic,pixels,cmap=color_option.currentText() + '_r')
     else:
         pic = f'./tmp/{time.time()}.png'
-        plt.imsave(pic,pixels,cmap=color_option.currentText())
+        plt.imsave(pic,pixels,cmap=color_option.currentText() + '_r')
 
     image.resize(root.width()-40,root.height()-80)
     image.setPixmap(QPixmap(pic))
