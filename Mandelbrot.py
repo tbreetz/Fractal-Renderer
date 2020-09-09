@@ -24,20 +24,22 @@ def fractal_generate(c, iterations, julia=None):
         return iterations
 
 @jit(nopython=True)
-def create_frame(center, window, im_w, iterations, julia):
+def create_frame(center, window, im_w, im_h, iterations, julia=None):
     center = complex(center)
-    min_x, max_x = center.real - window, center.real + window
+    ratio = im_w / im_h
+    min_x, max_x = center.real - ratio*window, center.real + ratio*window
     min_y, max_y = center.imag - window, center.imag + window
     reals = np.linspace(min_x,max_x,im_w)
-    imags = np.linspace(min_y,max_y,im_w)
+    imags = np.linspace(min_y,max_y,im_h)
 
     #Initiate full array first, change contents in loop
-    pixels = np.zeros((im_w*im_w),dtype=np.uint8)
+    pixels = np.zeros((im_w*im_h),dtype=np.uint8)
 
     for x,r in enumerate(reals):
         for y,j in enumerate(imags):
             iteration_count = fractal_generate(complex(r + j*1j), iterations, julia) #Find escape iterations
             pixels[x + im_w*y] = iteration_count
      
-    return pixels.reshape(im_w,im_w)
+    return pixels.reshape(im_h,im_w)
+
 

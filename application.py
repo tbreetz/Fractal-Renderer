@@ -8,6 +8,9 @@ from PyQt5.QtGui import QPixmap, QImage
 app = QApplication(sys.argv)
 root = QMainWindow()
 
+root.resize(1920,1080)
+root.setWindowTitle('Fractal Renderer')
+
 yoff = 25
 button = QPushButton(root)
 button.setText('Render')
@@ -42,32 +45,47 @@ width_label = QLabel(root)
 width_label.setText('Width')
 width_label.move(xoff,0)
 width_box = QLineEdit(root)
-width_box.setText('5000')
+width_box.setText('1920')
 width_box.move(xoff,yoff)
 xoff = xoff + width_box.width()
 
+height_label = QLabel(root)
+height_label.setText('Height')
+height_label.move(xoff,0)
+height_box = QLineEdit(root)
+height_box.setText('1080')
+height_box.move(xoff,yoff)
+xoff = xoff + height_box.width()
+
+orbit_trap_button = QCheckBox(root)
+orbit_trap_button.setText('Orbit?')
+orbit_trap_button.move(xoff,0)
+
 save_button = QCheckBox(root)
 save_button.setText('Save?')
+save_button.resize(save_button.width()-20,save_button.height())
 save_button.move(xoff,yoff)
 xoff = xoff + save_button.width()
 
+
+set_only_button = QCheckBox(root)
+set_only_button.setText('Set Only?')
+set_only_button.move(xoff,0)
+
 julia_button = QCheckBox(root)
 julia_button.setText('Julia?')
+julia_button.resize(julia_button.width()-20,julia_button.height())
 julia_button.move(xoff,yoff)
 xoff = xoff + julia_button.width()
 
+
 julia_label = QLabel(root)
-julia_label.setText("'c' Value")
+julia_label.setText("  'c' Value")
 julia_label.move(xoff,0)
 julia_box = QLineEdit(root)
 julia_box.setText('.34-.05j')
 julia_box.move(xoff,yoff)
 xoff = xoff + julia_box.width()
-
-set_only_button = QCheckBox(root)
-set_only_button.setText('Set Only?')
-set_only_button.move(xoff,yoff)
-xoff = xoff + set_only_button.width()
 
 color_label = QLabel(root)
 color_label.setText('Color Palette')
@@ -81,10 +99,6 @@ color_option.addItem('cividis')
 color_option.move(xoff,yoff)
 xoff = xoff + color_option.width()
 
-orbit_trap_button = QCheckBox(root)
-orbit_trap_button.setText('Orbit?')
-orbit_trap_button.move(xoff,yoff)
-xoff = xoff + orbit_trap_button.width()
 
 time_label = QLabel(root)
 time_label.move(xoff,yoff)
@@ -92,11 +106,8 @@ time_label.resize(200,30)
 xoff = xoff + time_label.width()
 
 image = QLabel(root)
-image.move(20,60)
-image.resize(1400,1400)
+image.move(0,60)
 
-root.resize(1440,1440)
-root.setWindowTitle('Fractal Renderer')
 root.show()
 
 def parse_complex(s):
@@ -107,19 +118,16 @@ def render():
     center = parse_complex(center_box.text())
     window = float(window_box.text())
     iterations = int(iterations_box.text())
+    width = int(width_box.text())
+    height = int(height_box.text())
     pixels = None
     pic = None
-    
-    if save_button.isChecked():
-        width = int(width_box.text())
-    else:
-        width = int(root.width()-30)
 
     if julia_button.isChecked():
         julia = parse_complex(julia_box.text())
-        pixels = create_frame(center, window, width, iterations,julia)
+        pixels = create_frame(center, window, width, height, iterations,julia)
     else:
-        pixels = create_frame(center, window, width, iterations,None)
+        pixels = create_frame(center, window, width, height, iterations,None)
     
     def orbit_color(v):
         return 100*abs(iterations - v) % 255
@@ -143,10 +151,9 @@ def render():
     else:
         pic = f'./tmp/{time.time()}.png'
         plt.imsave(pic,pixels,cmap=color_option.currentText() + '_r')
-
-    image.resize(root.width()-40,root.height()-80)
+    root.resize(width,height+60)
+    image.resize(width,height)
     image.setPixmap(QPixmap(pic))
-    image.setScaledContents(False)
     end = time.time()
     time_label.setText('Render: %.3fs' % (end-start))
 
