@@ -7,24 +7,24 @@ from sklearn import preprocessing
 from numba import jit, vectorize, cuda, uint8, uint32
 
 @jit(nopython=True)
-def fractal_generate(c, iterations, julia=None):
+def fractal_generate(l, iterations, julia=None,v=None):
     if julia != None:
-        z = c
+        z = l #l for lambda
         for i in range(iterations):
-            z = z**2 + julia 
-            if (z.real**2 + z.imag**2) >= 4:
+            z = julia(z) # julia(z) = lambda z: z**2 + .34 -.05
+            if v(z): # v(z) = lambda z: abs(z**2) >= 4 
                 return i
         return iterations
     else:
         z = complex(0)
         for i in range(iterations):
-            z = z**2 + c
-            if (z.real**2 + z.imag**2) >= 4:
+            z = z**2 + l
+            if abs(np.power(z,2)) >= 4:
                 return i
         return iterations
 
 @jit(nopython=True)
-def create_frame(center, window, im_w, im_h, iterations, julia=None):
+def create_frame(center, window, im_w, im_h, iterations, julia=None, v=None):
     center = complex(center)
     ratio = im_w / im_h
     min_x, max_x = center.real - ratio*window, center.real + ratio*window
@@ -37,7 +37,7 @@ def create_frame(center, window, im_w, im_h, iterations, julia=None):
 
     for x,r in enumerate(reals):
         for y,j in enumerate(imags):
-            iteration_count = fractal_generate(complex(r + j*1j), iterations, julia) #Find escape iterations
+            iteration_count = fractal_generate(complex(r + j*1j), iterations, julia, v) #Find escape iterations
             pixels[x + im_w*y] = iteration_count
      
     return pixels.reshape(im_h,im_w)

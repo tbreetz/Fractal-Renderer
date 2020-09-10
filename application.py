@@ -1,6 +1,7 @@
 import sys
 from Mandelbrot import create_frame
 import numpy as np
+from numba import jit
 import time
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QCheckBox, QComboBox
@@ -80,12 +81,22 @@ xoff = xoff + julia_button.width()
 
 
 julia_label = QLabel(root)
-julia_label.setText("  'c' Value")
+julia_label.setText('\tf(z)')
 julia_label.move(xoff,0)
 julia_box = QLineEdit(root)
-julia_box.setText('.34-.05j')
+julia_box.resize(julia_box.width()+30,julia_box.height())
+julia_box.setText('z**2 + .34-.05j')
 julia_box.move(xoff,yoff)
 xoff = xoff + julia_box.width()
+
+v_label = QLabel(root)
+v_label.setText('V (threshold)')
+v_label.move(xoff,0)
+v_box = QLineEdit(root)
+v_box.resize(v_box.width()+30,v_box.height())
+v_box.setText('abs(z**2) <= 4')
+v_box.move(xoff,yoff)
+xoff = xoff + v_box.width()
 
 color_label = QLabel(root)
 color_label.setText('Color Palette')
@@ -113,6 +124,12 @@ root.show()
 def parse_complex(s):
     return complex(s.replace(' ','').replace('i','j'))
 
+def julia_func(zn):
+    func_string = 'lambda z: %s' % zn
+    func = eval(func_string)
+    numba_func = jit(nopython=True)(func)
+    return numba_func
+
 def render():
     start = time.time()
     center = parse_complex(center_box.text())
@@ -124,10 +141,12 @@ def render():
     pic = None
 
     if julia_button.isChecked():
-        julia = parse_complex(julia_box.text())
-        pixels = create_frame(center, window, width, height, iterations,julia)
+        #julia = parse_complex(julia_box.text())
+        julia = julia_func(julia_box.text())
+        v = julia_func(v_box.text())
+        pixels = create_frame(center, window, width, height, iterations,julia,v)
     else:
-        pixels = create_frame(center, window, width, height, iterations,None)
+        pixels = create_frame(center, window, width, height, iterations,None,None)
     
     def orbit_color(v):
         return 100*abs(iterations - v) % 255
@@ -147,10 +166,10 @@ def render():
 
     if save_button.isChecked():
         pic = f'./export/{time.time()}.png'
-        plt.imsave(pic,pixels,cmap=color_option.currentText() + '_r')
+        plt.imsave(pic,pixels,cmap=color_option.currentText())
     else:
         pic = f'./tmp/{time.time()}.png'
-        plt.imsave(pic,pixels,cmap=color_option.currentText() + '_r')
+        plt.imsave(pic,pixels,cmap=color_option.currentText())
     root.resize(width,height+60)
     image.resize(width,height)
     image.setPixmap(QPixmap(pic))
