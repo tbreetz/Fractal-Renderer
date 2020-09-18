@@ -18,12 +18,21 @@ button.setText('Render')
 button.move(0,yoff)
 xoff = button.width()
 
+mandelbrot_label = QLabel(root)
+mandelbrot_label.setText('Mandelbrot Fam')
+mandelbrot_label.move(xoff,0)
+mandelbrot_box = QLineEdit(root)
+mandelbrot_box.resize(mandelbrot_box.width()+30,mandelbrot_box.height())
+mandelbrot_box.setText('z**2 - l')
+mandelbrot_box.move(xoff,yoff)
+xoff = xoff + mandelbrot_box.width()
+
 center_label = QLabel(root)
 center_label.setText('Center')
 center_label.move(xoff,0)
 center_box = QLineEdit(root)
-center_box.setText('-.5+0j')
-center_box.move(button.width(),yoff)
+center_box.setText('.5+0j')
+center_box.move(xoff,yoff)
 xoff = xoff + center_box.width()
 
 window_label = QLabel(root)
@@ -94,7 +103,7 @@ v_label.setText('V (threshold)')
 v_label.move(xoff,0)
 v_box = QLineEdit(root)
 v_box.resize(v_box.width()+30,v_box.height())
-v_box.setText('abs(z**2) <= 4')
+v_box.setText('abs(z**2) >= 4')
 v_box.move(xoff,yoff)
 xoff = xoff + v_box.width()
 
@@ -110,7 +119,6 @@ color_option.addItem('cividis')
 color_option.move(xoff,yoff)
 xoff = xoff + color_option.width()
 
-
 time_label = QLabel(root)
 time_label.move(xoff,yoff)
 time_label.resize(200,30)
@@ -124,9 +132,9 @@ root.show()
 def parse_complex(s):
     return complex(s.replace(' ','').replace('i','j'))
 
-def julia_func(zn):
-    func_string = 'lambda z: %s' % zn
-    func = eval(func_string)
+def parse_func(zn):
+    func_string = 'lambda z,l=None: %s' % zn
+    func = eval(func_string,{'__builtins__':None,'exp':np.exp},{'pow': pow, 'abs':abs})
     numba_func = jit(nopython=True)(func)
     return numba_func
 
@@ -139,14 +147,14 @@ def render():
     height = int(height_box.text())
     pixels = None
     pic = None
-
+    mandelbrot = parse_func(mandelbrot_box.text())
     if julia_button.isChecked():
         #julia = parse_complex(julia_box.text())
-        julia = julia_func(julia_box.text())
-        v = julia_func(v_box.text())
-        pixels = create_frame(center, window, width, height, iterations,julia,v)
+        julia = parse_func(julia_box.text())
+        v = parse_func(v_box.text())
+        pixels = create_frame(center, window, width, height, iterations,julia,v,mandelbrot)
     else:
-        pixels = create_frame(center, window, width, height, iterations,None,None)
+        pixels = create_frame(center, window, width, height, iterations,None,None,mandelbrot)
     
     def orbit_color(v):
         return 100*abs(iterations - v) % 255
