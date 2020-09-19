@@ -1,11 +1,11 @@
+from numba import jit
+import numpy as np
+
 '''
 A parser class with methods for:
     Converting strings to complex numbers
     Converting strings into safe functions for plotting mandelbrot/julia sets
 '''
-
-from numba import jit
-import numpy as np
 
 class parser:
     def string_to_complex(s):

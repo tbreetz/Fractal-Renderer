@@ -1,5 +1,12 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QImage
+'''
+This module contains a class containing the UI elements
+    and data for a fractal rendering application.
+
+The class is also responsible for passing the UI data
+    to the renderer in order to generate the desired fractal.
+'''
 
 class MainApp(QMainWindow):
     def __init__(self,renderer):
@@ -129,7 +136,9 @@ class MainApp(QMainWindow):
         self.current = None
         button.clicked.connect(self.render)
 
-
+    '''
+    Retrieve the latest data found in the UI's boxes and buttons
+    '''
     def updateData(self):
         self.data = {'mandelbrot':self.mandelbrot_box.text(),
                      'center':self.center_box.text(),
@@ -144,7 +153,10 @@ class MainApp(QMainWindow):
                      'fz':self.julia_box.text(),
                      'v':self.v_box.text(),
                      'palette':self.color_option.currentText()}
-
+    '''
+    Pass the UI data to the renderer and update the UI
+     to show the resultant image
+    '''
     def render(self):
         self.updateData()
         self.current = self.renderer(self.data)
