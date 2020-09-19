@@ -25,7 +25,7 @@ def renderer(data):
                               data['iterations'],None,None,mandelbrot)
     
     def orbit_color(v):
-        return 100*abs(iterations - v) % 255
+        return 100*abs(data['iterations'] - v) % 255
 
     def continuous_color(v):
         return v
