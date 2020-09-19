@@ -1,10 +1,3 @@
-import sys
-from parser import parser
-from mandelbrot import create_frame
-from renderer import renderer
-import numpy as np
-import time
-import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QImage
 

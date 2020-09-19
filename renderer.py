@@ -1,9 +1,13 @@
 import time
 import matplotlib.pyplot as plt
 from parser import parser
-from mandelbrot import create_frame
+from fractal import create_frame
 
-
+'''
+This module contains a rendering function that takes
+input data specifying a fractal function to render.
+Render time and an image file path are returned.
+'''
 
 def renderer(data):
     start = time.time()
