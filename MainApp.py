@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QIcon
 '''
 This module contains a class containing the UI elements
     and data for a fractal rendering application.
@@ -9,11 +9,14 @@ The class is also responsible for passing the UI data
 '''
 
 class MainApp(QMainWindow):
+    '''Initial UI set up'''
     def __init__(self,renderer):
         super().__init__()
+        self.setWindowTitle('Fractal Renderer')
+        self.setWindowIcon(QIcon('icon.png'))
+        self.resize(1920,1080)
         self.root = QWidget()
         self.setCentralWidget(self.root)
-        self.root.setWindowTitle('Fractal Renderer')
 
         yoff = 25
         button = QPushButton(self.root)
@@ -22,7 +25,7 @@ class MainApp(QMainWindow):
         xoff = button.width()
 
         mandelbrot_label = QLabel(self.root)
-        mandelbrot_label.setText('Mandelbrot Fam')
+        mandelbrot_label.setText('Mandelbrot Family')
         mandelbrot_label.move(xoff,0)
         self.mandelbrot_box = QLineEdit(self.root)
         self.mandelbrot_box.resize(self.mandelbrot_box.width()+30,self.mandelbrot_box.height())
@@ -164,3 +167,4 @@ class MainApp(QMainWindow):
         self.image.setPixmap(QPixmap(self.current['img']))
         self.time_label.setText('Render: %.3fs' % self.current['time'])
         self.root.resize(self.data['width'],self.data['height']+60)
+
