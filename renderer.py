@@ -1,7 +1,7 @@
 import time
 import matplotlib.pyplot as plt
 from parser import parser
-from fractal import create_frame
+from gpu_fractal import create_frame
 
 '''
 This module contains a rendering function that takes

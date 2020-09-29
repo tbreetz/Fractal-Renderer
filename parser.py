@@ -1,4 +1,4 @@
-from numba import jit
+from numba import jit, cuda
 import numpy as np
 
 '''
@@ -15,5 +15,5 @@ class parser:
         func_string = 'lambda z,l = None: %s' % zn
         func = eval(func_string, {'__builtins__':None, 'exp':np.exp},
         {'pow':pow,'abs':abs})
-        numba_func = jit(nopython=True)(func)
+        numba_func = cuda.jit(device=True)(func)
         return numba_func
