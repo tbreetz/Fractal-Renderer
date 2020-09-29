@@ -50,6 +50,8 @@ def renderer(data):
         pic = f'./export/{time.time()}.png'
         plt.imsave(pic,pixels,cmap=data['palette'])
     else:
+        if not os.path.exists('./tmp/'):
+            os.mkdir('./tmp')
         files = [f for f in os.listdir('./tmp/') if f.endswith('.png')]
         for f in files:
             os.remove(os.path.join('./tmp/',f)) #Remove old tmp files
